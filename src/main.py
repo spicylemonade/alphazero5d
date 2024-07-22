@@ -35,8 +35,8 @@ class Chess5DConverter:
         piece_type = self.piece_map[piece_type_char]
         start_pos = turn_piece_start[-2:]
 
-        x_start = ord(start_pos[0]) - ord('a')  # Convert 'a'-'h' to 0-7
-        y_start = 8-int(start_pos[1])  # Convert '1'-'8' to 0-7
+        x_start = ord(start_pos[0]) - ord('a')
+        y_start = 8-int(start_pos[1])
 
         # Parse end part
         timeline_turn_end = end.split('T')
@@ -47,8 +47,8 @@ class Chess5DConverter:
         turn_end = int(turn_end_pos[0])
 
         end_pos = turn_end_pos[-2:]
-        x_end = ord(end_pos[0]) - ord('a')  # Convert 'a'-'h' to 0-7
-        y_end = 8-int(end_pos[1])   # Convert '1'-'8' to 0-7
+        x_end = ord(end_pos[0]) - ord('a')
+        y_end = 8-int(end_pos[1])
 
 
         return timeline_start, turn_start, piece_type, x_start, y_start, timeline_end, turn_end, x_end, y_end
