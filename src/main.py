@@ -1,5 +1,5 @@
 import numpy as np
-
+from typing import Dict
 
 class Chess5DConverter:
     def __init__(self, MAX_TIMELINES, MAX_TURNS, NUM_PIECE_TYPES, BOARD_SIZE):
@@ -7,6 +7,10 @@ class Chess5DConverter:
         self.MAX_TURNS = MAX_TURNS
         self.NUM_PIECE_TYPES = NUM_PIECE_TYPES
         self.BOARD_SIZE = BOARD_SIZE
+        self.unis_used: Dict[int,bool] = {}
+        self.largest_black_timeline = int(((MAX_TIMELINES-1)/2)-1)
+        self.largest_white_timeline = 0
+        self.num_player =2
         self.piece_map = {
             'P': 0,  # Pawn
             'N': 1,  # Knight
@@ -51,6 +55,12 @@ class Chess5DConverter:
         y_end = 8-int(end_pos[1])
 
 
+        if timeline_start <0:
+            timeline_start = -1*timeline_end+int(((MAX_TIMELINES-1)/2)-1)
+        if timeline_end < 0:
+            timeline_end = -1*timeline_end+int(((MAX_TIMELINES-1)/2)-1)
+
+
         return timeline_start, turn_start, piece_type, x_start, y_start, timeline_end, turn_end, x_end, y_end
 
 
@@ -64,17 +74,61 @@ class Chess5DConverter:
                 notation)
             if not is_init:
                 #print(f"player: {player}, ", tensor[0, 0])
-                tensor[t_end, turn_end] = tensor[t_end, turn_end - 1]
+                #everytime you go back in time a parallel uni forms
+                if (turn_start != turn_end) or (t_start != t_end):
+                    if player == 1:
+                        self.largest_white_timeline+=1
+
+                        tensor[1,self.largest_white_timeline, turn_end] = tensor[0,t_end, turn_end]
+
+                        tensor[1, t_start, turn_start] = tensor[0, t_start, turn_start]
+
+                        tensor[1,t_start, turn_start, p_type, y_start, x_start] = 0  # Piece's start position
+
+                        tensor[1,self.largest_white_timeline, turn_end, p_type, y_end, x_end] = player  # Piece's end position
+                    else:
+                        self.largest_black_timeline+=1
+                        tensor[0,self.largest_black_timeline, turn_end+1] = tensor[1,t_end, turn_end]
+                        #print(tensor[0,self.largest_black_timeline, turn_end+1])
+
+                        tensor[0, t_start, turn_start + 1] = tensor[1, t_start, turn_start]
+
+                        tensor[0,t_start, turn_start+1, p_type, y_start, x_start] = 0  # Piece's start position
+
+                        tensor[0,self.largest_black_timeline, turn_end+1, p_type, y_end, x_end] = player  # Piece's end position
+
+
+                else:
+                    if player == 1:
+                        tensor[1,t_end, turn_end] = tensor[0,t_start, turn_start]
+
+                        tensor[1,t_start, turn_start, p_type, y_start, x_start] = 0  # Piece's start position
+
+                        tensor[1,t_end, turn_end, p_type, y_end, x_end] = player  # Piece's end position
+
+                        tensor[0, t_end, turn_end+1] = tensor[1, t_end, turn_end]
 
 
 
-            tensor[t_start, turn_start, p_type, y_start,x_start] = 0  # Piece's start position
+                    if player == -1:
+                        tensor[0, t_start, turn_start+1, p_type, y_start, x_start] = 0  # Piece's start position
 
-            tensor[t_end, turn_end, p_type, y_end, x_end] = player  # Piece's end position
+                        tensor[0, t_end, turn_end+1, p_type, y_end, x_end] = player  # Piece's end position
+
+                        tensor[1, t_end, turn_end+1] = tensor[0, t_end, turn_end+1]
+
+            else:
+
+                tensor[0,t_start, 1, p_type, y_start, x_start] = 0  # Piece's start position
+
+                tensor[0,t_end, 1, p_type, y_end, x_end] = player  # Piece's end position
+
+
+
 
         return tensor
     def init_board(self):
-        tensor = np.zeros((self.MAX_TIMELINES, self.MAX_TURNS, self.NUM_PIECE_TYPES, self.BOARD_SIZE, self.BOARD_SIZE))
+        tensor = np.zeros((self.num_player,self.MAX_TIMELINES, self.MAX_TURNS, self.NUM_PIECE_TYPES, self.BOARD_SIZE, self.BOARD_SIZE))
 
         initial_positions_white = [
             "(0T0)Ra1 >> (0T0)a1", "(0T0)Nb1 >> (0T0)b1", "(0T0)Bc1 >> (0T0)c1", "(0T0)Qd1 >> (0T0)d1",
@@ -98,8 +152,8 @@ class Chess5DConverter:
 
 
 
-MAX_TIMELINES = 1
-MAX_TURNS = 2
+MAX_TIMELINES = 11
+MAX_TURNS = 5
 NUM_PIECE_TYPES = 6
 BOARD_SIZE = 8
 
@@ -114,7 +168,17 @@ notations = [
 
 tensor= converter.init_board()
 tensor = converter.notation_to_tensor(tensor, notations, 1)
+
+tensor = converter.notation_to_tensor(tensor, ["(0T1)Pg7 >> (0T1)g5"], -1)
+
+tensor = converter.notation_to_tensor(tensor, ["(0T2)Nb1 >> (0T1)b3"], 1)
+
+tensor = converter.notation_to_tensor(tensor, ["(1T1)Ng8 >> (0T1)g6"], -1)
+
+tensor = converter.notation_to_tensor(tensor, ["(1T2)Ng1 >> (0T2)g3","(-1T2)Qd1 >> (-1T2)a4"], 1)
+print(tensor[1,1,2])
 print("Tensor shape:", tensor.shape)
-print(tensor[0,1])
+
+
 #print(converter.point_to_notation([1,2,3,4,5],[5,6,7,8]))
 
