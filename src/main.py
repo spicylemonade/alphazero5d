@@ -7,6 +7,14 @@ Chess = require('5d-chess-js')
 
 
 class Chess5D(JSrun):
+    piece_map = {
+        0:'P',
+        1:'B',
+        2:'K',
+        3:'R',
+        4:'Q',
+        5:'K'
+    }
     def __init__(self, max_time, max_turns):
         self.chess = Chess()
         self.max_time = max_time
@@ -16,6 +24,7 @@ class Chess5D(JSrun):
         self.raw_board = self.get_homogeneous_raw_board(self.chess, max_time, max_turns)
         self.board = cp.flip(self.raw_board_to_tensor(), axis=3)
         self.moves = None
+        self.piece = ''
         self.player = 1
         self.convert_moves()
 
@@ -49,28 +58,38 @@ class Chess5D(JSrun):
 
     def make_move(self, move):
         self.chess.move(str(move))
-        self.chess.submit()
+        if self.chess.submittable():
+            self.chess.submit()
         self.convert_moves()
 
     def pick_choice(self):
         start_move = self._pick_start_move()
         end_move = self._pick_end_move(start_move)
-        return self.move_to_string(start_move, end_move)
+        return self.move_to_string(start_move, end_move,self.piece)
 
     def _pick_start_move(self):
         tensor_start = self.choices_start.astype(cp.float64)
         tensor_start /= cp.sum(tensor_start)
         flat_index_start = cp.random.choice(len(tensor_start.flatten()),size=1, p=tensor_start.flatten())
         i, j, k, l = cp.unravel_index(flat_index_start, tensor_start.shape)
+
+        mask = (self.board[i, j.item(), :, k.item(), l.item()] == 1) | \
+               (self.board[i, j.item(), :, k.item(), l.item()] == -1)
+
+
+        self.piece = Chess5D.piece_map[cp.argmax(mask).item()]
+
+
         return {
             "timeline": self.convert_timeline_opposite(i.item()),
-            "turn": j.item(),
+            "turn": j.item()+1,
             "rank": k.item() + 1,
             "file": l.item() + 1
         }
 
     def _pick_end_move(self, start_move):
         end_moves = self.get_end_moves(self.moves, start_move)
+        print(end_moves)
         self.convert_moves_end(end_moves)
         tensor_end = self.choices_end.astype(cp.float64)
         tensor_end /= cp.sum(tensor_end)
@@ -78,9 +97,9 @@ class Chess5D(JSrun):
         m, n, o, p = cp.unravel_index(flat_index_end, tensor_end.shape)
         return {
             "timeline": self.convert_timeline_opposite(m.item()),
-            "turn": n.item(),
+            "turn": n.item()+1,
             "rank": o.item() + 1,
-            "file": p.item() + 1
+            "file": p.item() + 1,
         }
 
     @staticmethod
@@ -92,8 +111,8 @@ class Chess5D(JSrun):
         )]
 
     @staticmethod
-    def move_to_string(start, end):
-        return f"({start['timeline']}T{start['turn']}){chr(96 + start['file'])}{start['rank']} >> " \
+    def move_to_string(start, end,piece):
+        return f"({start['timeline']}T{start['turn']}){piece}{chr(96 + start['file'])}{start['rank']} >> " \
                f"({end['timeline']}T{end['turn']}){chr(96 + end['file'])}{end['rank']}"
 
     def convert_moves(self):
@@ -102,25 +121,28 @@ class Chess5D(JSrun):
         for move in self.moves:
             start = move['start']
             timeline = self.convert_timeline(start['timeline'])
-            self.choices_start[timeline, start['turn'], start['rank'] - 1, start['file'] - 1] = 1
+            self.choices_start[timeline, start['turn']-1, start['rank'] - 1, start['file'] - 1] = 1
 
     def convert_moves_end(self, moves):
         self.choices_end.fill(0)
         for move in moves:
             timeline = self.convert_timeline(move['timeline'])
-            self.choices_end[timeline, move['turn'], move['rank'] - 1, move['file'] - 1] = 1
+            self.choices_end[timeline, move['turn']-1, move['rank'] - 1, move['file'] - 1] = 1
 
 
 # Game loop
-game = Chess5D(11, 50)
+game = Chess5D(15, 35)
 
-while True:
+for i in range(30):
     print(f"Current player: {game.chess.player}")
     ai_move = game.pick_choice()
     print(f"AI move: {ai_move}")
-    #game.make_move(ai_move)
-
-    user_move = input("Your move (or 'q' to quit): ")
-    if user_move.lower() == 'q':
+    game.make_move(ai_move)
+    if game.chess.inCheckmate:
         break
-    game.make_move(user_move)
+
+    # user_move = input("Your move (or 'q' to quit): ")
+    # if user_move.lower() == 'q':
+    #     break
+    # game.make_move(user_move)
+print(game.chess.export("5dpgn"))
