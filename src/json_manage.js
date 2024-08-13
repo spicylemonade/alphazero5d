@@ -1,4 +1,8 @@
 function stringify(str) {
     return JSON.stringify((str))
 }
-module.exports = { stringify }
+function parse(str) {
+    return JSON.parse((str))
+}
+
+module.exports = { parse,stringify }
