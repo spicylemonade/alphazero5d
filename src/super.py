@@ -362,6 +362,7 @@ class Node:
     def get_ucb(self, child):
         if self.parent is not None:
             if self.parent.player == child.player:
+                print('this happened')
                 q_value = ((child.value_sum / child.visit_count) + 1) / 2
             else:
                 q_value = 1 - ((child.value_sum / child.visit_count) + 1) / 2
@@ -413,10 +414,9 @@ class Node:
                 #work on this
 
                 if x != rollout_state.player:
-                    return -value
-                else:
-
                     return value
+                else:
+                    return -value
 
 
 
@@ -466,7 +466,7 @@ class MCTS:
         # stuff
 
 
-game = Chess5D(5, 10)
+game = Chess5D(1, 25)
 game_play = game.get_initial_state()
 # thing
 args = {
@@ -478,7 +478,15 @@ AI_move= False
 while True:
     if game_play.player=='white':
         print(game_play.game_string)
-        action = input("move: ")
+        # action = input("move: ")
+        mcts_prob_s, mcts_prob_e = mcts.search(game_play)
+        # print(mcts_prob_s)
+        index_s = cp.unravel_index(cp.argmax(mcts_prob_s), mcts_prob_s.shape)
+
+        index_e = game._pick_end_move_org(index_s, game_play, mcts_prob_e)
+        action = f"({game.convert_timeline_opposite(index_s[0].item())}T{index_s[1].item() + 1}){chr(96 + index_s[3].item() + 1)}{index_s[2].item() + 1}>>" \
+                 f"({index_e['timeline']}T{index_e['turn']}){chr(96 + index_e['file'])}{index_e['rank']}"
+        print(f"AI move: {action}")
 
     else:
         mcts_prob_s, mcts_prob_e = mcts.search(game_play)
