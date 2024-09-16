@@ -1,4 +1,4 @@
-montecarlo tree search neural network implementstion for 5d chess
+montecarlo tree search neural network implementation for 5d chess
 
 Work in progress
 issues: 
