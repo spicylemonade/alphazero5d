@@ -1,0 +1,16 @@
+{
+  "total_games": 100,
+  "avg_game_length": 29.95,
+  "std_game_length": 11.66736902647722,
+  "white_wins": 32,
+  "black_wins": 30,
+  "draws": 38,
+  "checkmates": 59,
+  "draw_losses": 30,
+  "stalemates": 11,
+  "avg_search_depth": 9.509512804058032,
+  "total_node_visits": 57463,
+  "white_win_rate": 32.0,
+  "black_win_rate": 30.0,
+  "draw_rate": 38.0
+}
