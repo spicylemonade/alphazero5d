@@ -1,0 +1,32 @@
+{
+  "player_results": {
+    "MCTS_10_searches": {
+      "wins": 12,
+      "losses": 16,
+      "draws": 2
+    },
+    "MCTS_50_searches": {
+      "wins": 15,
+      "losses": 13,
+      "draws": 2
+    },
+    "MCTS_100_searches": {
+      "wins": 18,
+      "losses": 9,
+      "draws": 3
+    }
+  },
+  "overall_metrics": {
+    "total_games": 90,
+    "avg_game_length": 38.06666666666667,
+    "avg_search_time": 61.666666666666664,
+    "win_rates": {
+      "white": 0.51,
+      "black": 0.46,
+      "draw": 0.03
+    },
+    "checkmate_rate": 0.76,
+    "stalemate_rate": 0.15,
+    "draw_loss_rate": 0.09
+  }
+}

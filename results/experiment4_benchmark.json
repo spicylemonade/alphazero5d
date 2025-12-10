@@ -1,0 +1,23 @@
+{
+  "Pure_MCTS": {
+    "avg_search_time": 0.0573,
+    "std_search_time": 0.0123,
+    "avg_entropy": 4.28,
+    "avg_max_prob": 0.18,
+    "avg_available_moves": 42.7
+  },
+  "AlphaZero_MCTS": {
+    "avg_search_time": 0.0698,
+    "std_search_time": 0.0145,
+    "avg_entropy": 3.31,
+    "avg_max_prob": 0.31,
+    "avg_available_moves": 42.7
+  },
+  "Adaptive_AlphaZero": {
+    "avg_search_time": 0.0662,
+    "std_search_time": 0.0187,
+    "avg_entropy": 3.35,
+    "avg_max_prob": 0.29,
+    "avg_available_moves": 42.7
+  }
+}

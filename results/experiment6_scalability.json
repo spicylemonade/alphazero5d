@@ -1,0 +1,29 @@
+{
+  "small": {
+    "config": {
+      "max_time": 5,
+      "max_turns": 15,
+      "name": "small"
+    },
+    "avg_game_length": 28.4,
+    "avg_moves_per_turn": 31.2
+  },
+  "medium": {
+    "config": {
+      "max_time": 7,
+      "max_turns": 20,
+      "name": "medium"
+    },
+    "avg_game_length": 35.7,
+    "avg_moves_per_turn": 38.6
+  },
+  "large": {
+    "config": {
+      "max_time": 11,
+      "max_turns": 30,
+      "name": "large"
+    },
+    "avg_game_length": 43.1,
+    "avg_moves_per_turn": 47.3
+  }
+}

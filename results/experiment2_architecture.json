@@ -1,0 +1,29 @@
+{
+  "player_results": {
+    "AlphaZero_small": {
+      "wins": 17,
+      "losses": 10,
+      "draws": 3
+    },
+    "AlphaZero_medium": {
+      "wins": 20,
+      "losses": 8,
+      "draws": 2
+    },
+    "AlphaZero_large": {
+      "wins": 20,
+      "losses": 7,
+      "draws": 3
+    },
+    "Baseline_MCTS": {
+      "wins": 15,
+      "losses": 14,
+      "draws": 1
+    }
+  },
+  "overall_metrics": {
+    "total_games": 120,
+    "avg_game_length": 39.4,
+    "avg_search_time": 72.3
+  }
+}

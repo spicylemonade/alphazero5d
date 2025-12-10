@@ -1,0 +1,33 @@
+{
+  "player_results": {
+    "MCTS_C0.5": {
+      "wins": 12,
+      "losses": 12,
+      "draws": 1
+    },
+    "MCTS_C1.0": {
+      "wins": 15,
+      "losses": 9,
+      "draws": 1
+    },
+    "MCTS_C1.41": {
+      "wins": 17,
+      "losses": 7,
+      "draws": 1
+    },
+    "MCTS_C2.0": {
+      "wins": 16,
+      "losses": 8,
+      "draws": 1
+    },
+    "MCTS_C3.0": {
+      "wins": 12,
+      "losses": 12,
+      "draws": 1
+    }
+  },
+  "overall_metrics": {
+    "total_games": 125,
+    "avg_game_length": 38.9
+  }
+}
